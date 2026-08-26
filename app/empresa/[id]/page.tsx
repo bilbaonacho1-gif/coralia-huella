@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getProduct, getProductItems, getEmissionFactors } from "@/lib/queries";
 import { calculateFootprint } from "@/lib/carbon";
 import { AddItemForm } from "@/components/AddItemForm";
+import { EnergyForm } from "@/components/EnergyForm";
 
 export default async function ProductoPage({
     params,
@@ -77,6 +78,17 @@ export default async function ProductoPage({
                     productId={id}
                     type="packaging"
                     factors={factors.filter((f) => f.category === "packaging")}
+                />
+            </div>
+            <div className="mt-8">
+                <h2 className="text-lg font-medium text-cream mb-1">Manufactura</h2>
+                <p className="text-muted text-sm mb-3">
+                    Consumo eléctrico del lote. Se prorratea entre las unidades producidas.
+                </p>
+                <EnergyForm
+                    productId={id}
+                    kwh={product.kwh_per_batch}
+                    units={product.units_per_batch}
                 />
             </div>
         </main>

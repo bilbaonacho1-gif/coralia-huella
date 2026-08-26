@@ -99,3 +99,43 @@ export async function addItem(
     revalidatePath(`/empresa/${product_id}`);
     return {};
 }
+const energySchema = z.object({
+    product_id: z.string().uuid(),
+    kwh_per_batch: z.coerce
+        .number()
+        .nonnegative("El consumo no puede ser negativo")
+        .max(1000000, "El valor es demasiado grande"),
+    units_per_batch: z.coerce
+        .number()
+        .int("Las unidades deben ser un número entero")
+        .positive("Las unidades por lote deben ser mayores a cero"),
+});
+
+export async function updateEnergy(
+    _prevState: FormState,
+    formData: FormData
+): Promise<FormState> {
+    const parsed = energySchema.safeParse({
+        product_id: formData.get("product_id"),
+        kwh_per_batch: formData.get("kwh_per_batch"),
+        units_per_batch: formData.get("units_per_batch"),
+    });
+
+    if (!parsed.success) {
+        return { error: parsed.error.issues[0].message };
+    }
+
+    const { product_id, kwh_per_batch, units_per_batch } = parsed.data;
+
+    const { error } = await supabase
+        .from("products")
+        .update({ kwh_per_batch, units_per_batch })
+        .eq("id", product_id);
+
+    if (error) {
+        return { error: "No se pudo guardar el consumo. Intentá de nuevo." };
+    }
+
+    revalidatePath(`/empresa/${product_id}`);
+    return {};
+}
