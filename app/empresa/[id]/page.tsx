@@ -1,13 +1,19 @@
 export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProduct, getProductItems, getEmissionFactors } from "@/lib/queries";
+import {
+    getProduct,
+    getProductItems,
+    getEmissionFactors,
+    getLastReview,
+} from "@/lib/queries";
 import { calculateFootprint } from "@/lib/carbon";
 import { AddItemForm } from "@/components/AddItemForm";
 import { EnergyForm } from "@/components/EnergyForm";
 import { Breakdown } from "@/components/Breakdown";
 import { SubmitForReview } from "@/components/SubmitForReview";
-import { getLastReview } from "@/lib/queries";
+
 export default async function ProductoPage({
     params,
 }: {
@@ -23,6 +29,7 @@ export default async function ProductoPage({
         getEmissionFactors(),
         getLastReview(id),
     ]);
+
     const factorName = (factorId: string) =>
         factors.find((f) => f.id === factorId)?.name ?? "Desconocido";
 
@@ -40,7 +47,7 @@ export default async function ProductoPage({
     );
 
     return (
-        <main className="flex-1 px-6 py-8 max-w-md mx-auto w-full pb-24">
+        <main className="flex-1 px-6 py-8 w-full max-w-md lg:max-w-5xl mx-auto pb-24">
             <Link href="/empresa" className="text-muted text-sm hover:text-cream">
                 ← Mis productos
             </Link>
@@ -52,58 +59,73 @@ export default async function ProductoPage({
                 <p className="text-muted mt-2">{product.functional_unit}</p>
             </header>
 
-            <section className="bg-surface border border-line rounded-card p-6 mb-6">
-                <p className="text-muted text-sm mb-1">Huella total</p>
-                <p className="text-4xl font-semibold text-accent">
-                    {result.total.toFixed(4)}
-                    <span className="text-base text-muted ml-2">kg CO₂e / unidad</span>
-                </p>
-            </section>
+            <div className="lg:grid lg:grid-cols-[380px_1fr] lg:gap-10 lg:items-start">
+                {/* Columna izquierda: resultado */}
+                <div className="lg:sticky lg:top-8">
+                    <section className="bg-surface border border-line rounded-card p-6 mb-6">
+                        <p className="text-muted text-sm mb-1">Huella total</p>
+                        <p className="text-4xl font-semibold text-accent">
+                            {result.total.toFixed(4)}
+                            <span className="text-base text-muted ml-2">
+                                kg CO₂e / unidad
+                            </span>
+                        </p>
+                    </section>
 
-            <div className="mb-8">
-                <Breakdown result={result} />
-            </div>
+                    <div className="mb-8">
+                        <Breakdown result={result} />
+                    </div>
+                </div>
 
-            <Section
-                title="Ingredientes"
-                items={items.filter((i) => i.type === "ingredient")}
-                factorName={factorName}
-            />
-            <AddItemForm
-                productId={id}
-                type="ingredient"
-                factors={factors.filter((f) => f.category === "ingredient")}
-            />
+                {/* Columna derecha: carga */}
+                <div>
+                    <Section
+                        title="Ingredientes"
+                        items={items.filter((i) => i.type === "ingredient")}
+                        factorName={factorName}
+                    />
+                    <AddItemForm
+                        productId={id}
+                        type="ingredient"
+                        factors={factors.filter((f) => f.category === "ingredient")}
+                    />
 
-            <div className="mt-8">
-                <Section
-                    title="Packaging"
-                    items={items.filter((i) => i.type === "packaging")}
-                    factorName={factorName}
-                />
-                <AddItemForm
-                    productId={id}
-                    type="packaging"
-                    factors={factors.filter((f) => f.category === "packaging")}
-                />
-            </div>
-            <div className="mt-8">
-                <h2 className="text-lg font-medium text-cream mb-1">Manufactura</h2>
-                <p className="text-muted text-sm mb-3">
-                    Consumo eléctrico del lote. Se prorratea entre las unidades producidas.
-                </p>
-                <EnergyForm
-                    productId={id}
-                    kwh={product.kwh_per_batch}
-                    units={product.units_per_batch}
-                />
-            </div>
-            <div className="mt-10">
-                <SubmitForReview
-                    productId={id}
-                    status={product.status}
-                    lastComment={lastReview?.comment ?? null}
-                />
+                    <div className="mt-8">
+                        <Section
+                            title="Packaging"
+                            items={items.filter((i) => i.type === "packaging")}
+                            factorName={factorName}
+                        />
+                        <AddItemForm
+                            productId={id}
+                            type="packaging"
+                            factors={factors.filter((f) => f.category === "packaging")}
+                        />
+                    </div>
+
+                    <div className="mt-8">
+                        <h2 className="text-lg font-medium text-cream mb-1">
+                            Manufactura
+                        </h2>
+                        <p className="text-muted text-sm mb-3">
+                            Consumo eléctrico del lote. Se prorratea entre las unidades
+                            producidas.
+                        </p>
+                        <EnergyForm
+                            productId={id}
+                            kwh={product.kwh_per_batch}
+                            units={product.units_per_batch}
+                        />
+                    </div>
+
+                    <div className="mt-10">
+                        <SubmitForReview
+                            productId={id}
+                            status={product.status}
+                            lastComment={lastReview?.comment ?? null}
+                        />
+                    </div>
+                </div>
             </div>
         </main>
     );
