@@ -139,3 +139,115 @@ export async function updateEnergy(
     revalidatePath(`/empresa/${product_id}`);
     return {};
 }
+export async function submitForReview(
+    _prevState: FormState,
+    formData: FormData
+): Promise<FormState> {
+    const productId = formData.get("product_id");
+    if (typeof productId !== "string") {
+        return { error: "Producto inválido." };
+    }
+
+    // Verificamos que el producto este listo para enviarse
+    const [{ data: product }, { count }] = await Promise.all([
+        supabase
+            .from("products")
+            .select("kwh_per_batch, units_per_batch, status")
+            .eq("id", productId)
+            .single(),
+        supabase
+            .from("product_items")
+            .select("*", { count: "exact", head: true })
+            .eq("product_id", productId),
+    ]);
+
+    if (!product) return { error: "El producto no existe." };
+
+    if (product.status === "pending_review") {
+        return { error: "El producto ya está en revisión." };
+    }
+
+    if (!count) {
+        return { error: "Agregá al menos un ingrediente o packaging antes de enviar." };
+    }
+
+    if (product.units_per_batch === null) {
+        return { error: "Cargá el consumo eléctrico antes de enviar." };
+    }
+
+    const { error } = await supabase
+        .from("products")
+        .update({ status: "pending_review" })
+        .eq("id", productId);
+
+    if (error) {
+        return { error: "No se pudo enviar a revisión. Intentá de nuevo." };
+    }
+
+    revalidatePath(`/empresa/${productId}`);
+    revalidatePath("/empresa");
+    revalidatePath("/consultor");
+    return {};
+}
+const reviewSchema = z.object({
+    product_id: z.string().uuid(),
+    action: z.enum(["approved", "rejected"]),
+    comment: z.string().trim().max(500, "El comentario es demasiado largo"),
+});
+
+export async function reviewProduct(
+    _prevState: FormState,
+    formData: FormData
+): Promise<FormState> {
+    const parsed = reviewSchema.safeParse({
+        product_id: formData.get("product_id"),
+        action: formData.get("action"),
+        comment: formData.get("comment") ?? "",
+    });
+
+    if (!parsed.success) {
+        return { error: parsed.error.issues[0].message };
+    }
+
+    const { product_id, action, comment } = parsed.data;
+
+    // La consigna exige comentario obligatorio al devolver
+    if (action === "rejected" && comment.length < 5) {
+        return { error: "Escribí un comentario explicando qué corregir." };
+    }
+
+    const { data: product } = await supabase
+        .from("products")
+        .select("status")
+        .eq("id", product_id)
+        .single();
+
+    if (!product) return { error: "El producto no existe." };
+    if (product.status !== "pending_review") {
+        return { error: "Este producto no está en revisión." };
+    }
+
+    const { error: reviewError } = await supabase.from("reviews").insert({
+        product_id,
+        action,
+        comment: comment || null,
+    });
+
+    if (reviewError) {
+        return { error: "No se pudo guardar la revisión. Intentá de nuevo." };
+    }
+
+    const { error: statusError } = await supabase
+        .from("products")
+        .update({ status: action })
+        .eq("id", product_id);
+
+    if (statusError) {
+        return { error: "No se pudo actualizar el estado. Intentá de nuevo." };
+    }
+
+    revalidatePath("/consultor");
+    revalidatePath("/empresa");
+    revalidatePath(`/empresa/${product_id}`);
+    redirect("/consultor");
+}

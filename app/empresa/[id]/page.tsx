@@ -5,6 +5,8 @@ import { calculateFootprint } from "@/lib/carbon";
 import { AddItemForm } from "@/components/AddItemForm";
 import { EnergyForm } from "@/components/EnergyForm";
 import { Breakdown } from "@/components/Breakdown";
+import { SubmitForReview } from "@/components/SubmitForReview";
+import { getLastReview } from "@/lib/queries";
 export default async function ProductoPage({
     params,
 }: {
@@ -15,11 +17,11 @@ export default async function ProductoPage({
     const product = await getProduct(id);
     if (!product) notFound();
 
-    const [items, factors] = await Promise.all([
+    const [items, factors, lastReview] = await Promise.all([
         getProductItems(id),
         getEmissionFactors(),
+        getLastReview(id),
     ]);
-
     const factorName = (factorId: string) =>
         factors.find((f) => f.id === factorId)?.name ?? "Desconocido";
 
@@ -93,6 +95,13 @@ export default async function ProductoPage({
                     productId={id}
                     kwh={product.kwh_per_batch}
                     units={product.units_per_batch}
+                />
+            </div>
+            <div className="mt-10">
+                <SubmitForReview
+                    productId={id}
+                    status={product.status}
+                    lastComment={lastReview?.comment ?? null}
                 />
             </div>
         </main>
