@@ -4,7 +4,7 @@ import { getProduct, getProductItems, getEmissionFactors } from "@/lib/queries";
 import { calculateFootprint } from "@/lib/carbon";
 import { AddItemForm } from "@/components/AddItemForm";
 import { EnergyForm } from "@/components/EnergyForm";
-
+import { Breakdown } from "@/components/Breakdown";
 export default async function ProductoPage({
     params,
 }: {
@@ -56,6 +56,10 @@ export default async function ProductoPage({
                     <span className="text-base text-muted ml-2">kg CO₂e / unidad</span>
                 </p>
             </section>
+
+            <div className="mb-8">
+                <Breakdown result={result} />
+            </div>
 
             <Section
                 title="Ingredientes"
