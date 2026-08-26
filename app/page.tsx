@@ -1,28 +1,14 @@
-import { supabase } from "@/lib/supabase";
-
-export default async function Home() {
-  const { data, error } = await supabase
-    .from("emission_factors")
-    .select("name, category, factor")
-    .order("category")
-    .order("name");
-
-  if (error) {
-    return <p className="p-8 text-red-600">Error: {error.message}</p>;
-  }
-
+export default function Home() {
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-4">
-        Factores de emisión ({data.length})
-      </h1>
-      <ul className="space-y-1">
-        {data.map((f) => (
-          <li key={f.name}>
-            {f.name} — {f.category} — {f.factor}
-          </li>
-        ))}
-      </ul>
+    <main className="p-8 space-y-4">
+      <h1 className="text-3xl font-semibold text-cream">Prueba de tokens</h1>
+      <p className="text-muted">Texto secundario</p>
+      <div className="bg-surface border border-line rounded-card p-6">
+        <p className="text-accent">Card sobre superficie</p>
+      </div>
+      <button className="bg-accent-strong text-bg px-6 py-3 rounded-pill font-medium">
+        Botón de acción
+      </button>
     </main>
   );
 }
