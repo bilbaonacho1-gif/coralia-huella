@@ -13,7 +13,9 @@ import { AddItemForm } from "@/components/AddItemForm";
 import { EnergyForm } from "@/components/EnergyForm";
 import { Breakdown } from "@/components/Breakdown";
 import { SubmitForReview } from "@/components/SubmitForReview";
-import { getLastReview } from "@/lib/queries";
+import { deleteItem } from "@/app/actions/products";
+import { isEditable, type ProductStatus } from "@/lib/types";
+
 export default async function ProductoPage({
     params,
 }: {
@@ -77,47 +79,56 @@ export default async function ProductoPage({
                     </div>
                 </div>
 
-                <Section
-                    title="Ingredientes"
-                    items={items.filter((i) => i.type === "ingredient")}
-                    factorName={factorName}
-                />
-                <AddItemForm
-                    productId={id}
-                    type="ingredient"
-                    factors={factors.filter((f) => f.category === "ingredient")}
-                />
-
-                <div className="mt-8">
+                {/* Columna derecha: carga de datos */}
+                <div>
                     <Section
-                        title="Packaging"
-                        items={items.filter((i) => i.type === "packaging")}
+                        title="Ingredientes"
+                        items={items.filter((i) => i.type === "ingredient")}
                         factorName={factorName}
+                        status={product.status}
                     />
                     <AddItemForm
                         productId={id}
-                        type="packaging"
-                        factors={factors.filter((f) => f.category === "packaging")}
+                        type="ingredient"
+                        factors={factors.filter((f) => f.category === "ingredient")}
                     />
+
+                    <div className="mt-8">
+                        <Section
+                            title="Packaging"
+                            items={items.filter((i) => i.type === "packaging")}
+                            factorName={factorName}
+                            status={product.status}
+                        />
+                        <AddItemForm
+                            productId={id}
+                            type="packaging"
+                            factors={factors.filter((f) => f.category === "packaging")}
+                        />
+                    </div>
+
+                    <div className="mt-8">
+                        <h2 className="text-lg font-medium text-cream mb-1">Manufactura</h2>
+                        <p className="text-muted text-sm mb-3">
+                            Consumo eléctrico del lote. Se prorratea entre las unidades
+                            producidas.
+                        </p>
+                        <EnergyForm
+                            productId={id}
+                            kwh={product.kwh_per_batch}
+                            units={product.units_per_batch}
+                        />
+                    </div>
+
+                    <div className="mt-10">
+                        <SubmitForReview
+                            productId={id}
+                            status={product.status}
+                            lastComment={lastReview?.comment ?? null}
+                        />
+                    </div>
                 </div>
-                <div className="mt-8">
-                    <h2 className="text-lg font-medium text-cream mb-1">Manufactura</h2>
-                    <p className="text-muted text-sm mb-3">
-                        Consumo eléctrico del lote. Se prorratea entre las unidades producidas.
-                    </p>
-                    <EnergyForm
-                        productId={id}
-                        kwh={product.kwh_per_batch}
-                        units={product.units_per_batch}
-                    />
-                </div>
-                <div className="mt-10">
-                    <SubmitForReview
-                        productId={id}
-                        status={product.status}
-                        lastComment={lastReview?.comment ?? null}
-                    />
-                </div>
+            </div>
         </main>
     );
 }
