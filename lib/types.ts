@@ -34,3 +34,7 @@ export type Review = {
     comment: string | null;
     created_at: string;
 };
+
+export function isEditable(status: ProductStatus) {
+    return status === "draft" || status === "rejected";
+}

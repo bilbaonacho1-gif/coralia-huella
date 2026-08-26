@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
-
+import { isEditable } from "@/lib/types";
 const createProductSchema = z.object({
     name: z
         .string()
@@ -163,8 +163,13 @@ export async function submitForReview(
 
     if (!product) return { error: "El producto no existe." };
 
-    if (product.status === "pending_review") {
-        return { error: "El producto ya está en revisión." };
+    if (!isEditable(product.status)) {
+        return {
+            error:
+                product.status === "pending_review"
+                    ? "El producto ya está en revisión."
+                    : "El producto ya fue aprobado.",
+        };
     }
 
     if (!count) {
@@ -250,4 +255,35 @@ export async function reviewProduct(
     revalidatePath("/empresa");
     revalidatePath(`/empresa/${product_id}`);
     redirect("/consultor");
+}
+const deleteItemSchema = z.object({
+    itemId: z.string().uuid(),
+});
+
+export async function deleteItem(formData: FormData) {
+    const parsed = deleteItemSchema.safeParse({
+        itemId: formData.get("itemId"),
+    });
+
+    if (!parsed.success) return;
+
+    const { data: item } = await supabase
+        .from("product_items")
+        .select("id, product_id, products(status)")
+        .eq("id", parsed.data.itemId)
+        .single();
+
+    if (!item) return;
+    const product = Array.isArray(item.products) ? item.products[0] : item.products;
+
+    if (!product || !isEditable(product.status)) return;
+
+    const { error } = await supabase
+        .from("product_items")
+        .delete()
+        .eq("id", item.id);
+
+    if (error) return;
+
+    revalidatePath(`/empresa/${item.product_id}`);
 }
