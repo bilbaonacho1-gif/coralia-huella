@@ -51,7 +51,7 @@ export default async function ProductoPage({
 
     return (
         <PageShell>
-            <main className="flex-1 px-8 py-6 lg:px-12 lg:py-8 w-full max-w-md lg:max-w-7xl mx-auto lg:mx-0 pb-24">
+            <main className="flex-1 px-6 py-8 lg:px-12 w-full max-w-md lg:max-w-7xl mx-auto lg:mx-0 pb-24">
                 <Link href="/empresa" className="text-muted text-sm hover:text-cream">
                     ← Mis productos
                 </Link>
