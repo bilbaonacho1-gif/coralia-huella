@@ -24,15 +24,15 @@ export default function Home() {
         <Image
           src="/coralia.avif"
           alt="Coralia Environmental"
-          width={90}
-          height={101}
+          width={120}
+          height={130}
           className="h-auto"
         />
       </Link>
 
       {/* Contenido */}
       <main className="relative flex-1 flex flex-col justify-center px-6 pb-12 lg:px-16 xl:px-20">
-        <div className="w-full max-w-md mx-auto lg:mx-0 lg:max-w-3xl">
+        <div className="w-full max-w-md mx-auto lg:max-w-3xl">
           <header className="mb-8 lg:mb-10">
             <h1 className="text-4xl lg:text-5xl xl:text-6xl font-semibold leading-[1.1] text-cream">
               Medí el impacto{" "}
@@ -51,13 +51,13 @@ export default function Home() {
           >
             <RoleCard
               href="/empresa"
-              title="Soy empresa"
+              title="SOY EMPRESA"
               description="Calculá y gestioná la huella de tus productos."
               icon={<BuildingIcon />}
             />
             <RoleCard
               href="/consultor"
-              title="Soy consultor"
+              title="SOY CONSULTOR "
               description="Revisá y aprobá productos pendientes."
               icon={<PersonIcon />}
             />
