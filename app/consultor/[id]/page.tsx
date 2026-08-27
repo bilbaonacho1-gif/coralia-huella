@@ -3,8 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProduct, getProductItems, getEmissionFactors } from "@/lib/queries";
 import { calculateFootprint } from "@/lib/carbon";
-import { Breakdown } from "@/components/Breakdown";
+import { StageBreakdown, TopContributors } from "@/components/Breakdown";
 import { ReviewForm } from "@/components/ReviewForm";
+import { PageShell } from "@/components/PageShell";
 
 export default async function RevisarPage({
     params,
@@ -38,62 +39,80 @@ export default async function RevisarPage({
     );
 
     return (
-        <main className="flex-1 px-6 py-8 max-w-md mx-auto w-full pb-24">
-            <Link href="/consultor" className="text-muted text-sm hover:text-cream">
-                ← Pendientes
-            </Link>
+        <PageShell background="/hojas.webp">
+            <main className="flex-1 px-6 py-8 lg:px-12 w-full max-w-md lg:max-w-7xl mx-auto lg:mx-0 pb-24">
+                <Link href="/consultor" className="text-muted text-sm hover:text-cream">
+                    ← Pendientes
+                </Link>
 
-            <header className="mt-6 mb-8">
-                <h1 className="text-3xl font-semibold text-cream leading-tight">
-                    {product.name}
-                </h1>
-                <p className="text-muted mt-2">{product.functional_unit}</p>
-            </header>
+                {/* Fila 1: producto + desglose + top 3 */}
+                <div className="mt-6 grid gap-4 lg:grid-cols-3 mb-4">
+                    <section className="bg-surface border border-line rounded-card p-6 flex flex-col justify-center">
+                        <h1 className="text-2xl font-semibold text-cream leading-tight">
+                            {product.name}
+                        </h1>
+                        <p className="text-muted text-sm mt-1 mb-6">
+                            {product.functional_unit}
+                        </p>
 
-            <section className="bg-surface border border-line rounded-card p-6 mb-6">
-                <p className="text-muted text-sm mb-1">Huella total</p>
-                <p className="text-4xl font-semibold text-accent">
-                    {result.total.toFixed(4)}
-                    <span className="text-base text-muted ml-2">kg CO₂e / unidad</span>
-                </p>
-            </section>
+                        <p className="text-muted text-sm mb-2">Huella total</p>
+                        <p className="text-4xl font-semibold text-accent leading-none">
+                            {result.total.toFixed(4)}
+                        </p>
+                        <p className="text-muted text-sm mt-2">kg CO₂e / unidad</p>
+                    </section>
 
-            <div className="mb-8">
-                <Breakdown result={result} />
-            </div>
+                    <section className="bg-surface border border-line rounded-card p-6">
+                        <StageBreakdown result={result} />
+                    </section>
 
-            <section className="mb-8">
-                <h2 className="text-lg font-medium text-cream mb-3">Receta cargada</h2>
-                <ul className="space-y-2">
-                    {items.map((item) => (
-                        <li
-                            key={item.id}
-                            className="flex justify-between items-baseline bg-surface border border-line rounded-xl px-4 py-3"
-                        >
-                            <span className="text-cream text-sm">
-                                {factorName(item.emission_factor_id)}
-                                <span className="text-muted ml-2 text-xs">
-                                    {item.type === "ingredient" ? "ingrediente" : "packaging"}
+                    <section className="bg-surface border border-line rounded-card p-6">
+                        <TopContributors result={result} />
+                    </section>
+                </div>
+
+                {/* Fila 2: receta + formulario de revisión */}
+                <div className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
+                    <section className="bg-surface border border-line rounded-card p-6">
+                        <h2 className="text-lg font-medium text-cream mb-4">
+                            Receta cargada
+                        </h2>
+                        <ul className="space-y-2">
+                            {items.map((item) => (
+                                <li
+                                    key={item.id}
+                                    className="flex justify-between items-baseline gap-3 bg-surface-2 border border-line rounded-xl px-4 py-3"
+                                >
+                                    <span className="text-cream text-sm min-w-0">
+                                        {factorName(item.emission_factor_id)}
+                                        <span className="text-muted ml-2 text-xs">
+                                            {item.type === "ingredient"
+                                                ? "ingrediente"
+                                                : "packaging"}
+                                        </span>
+                                    </span>
+                                    <span className="text-muted text-sm tabular-nums shrink-0">
+                                        {item.grams} g × {item.factor_snapshot}
+                                    </span>
+                                </li>
+                            ))}
+                            <li className="flex justify-between items-baseline gap-3 bg-surface-2 border border-line rounded-xl px-4 py-3">
+                                <span className="text-cream text-sm">
+                                    Electricidad
+                                    <span className="text-muted ml-2 text-xs">manufactura</span>
                                 </span>
-                            </span>
-                            <span className="text-muted text-sm tabular-nums">
-                                {item.grams} g × {item.factor_snapshot}
-                            </span>
-                        </li>
-                    ))}
-                    <li className="flex justify-between items-baseline bg-surface border border-line rounded-xl px-4 py-3">
-                        <span className="text-cream text-sm">
-                            Electricidad
-                            <span className="text-muted ml-2 text-xs">manufactura</span>
-                        </span>
-                        <span className="text-muted text-sm tabular-nums">
-                            {product.kwh_per_batch} kWh ÷ {product.units_per_batch} u.
-                        </span>
-                    </li>
-                </ul>
-            </section>
+                                <span className="text-muted text-sm tabular-nums shrink-0">
+                                    {product.kwh_per_batch} kWh ÷ {product.units_per_batch} u.
+                                </span>
+                            </li>
+                        </ul>
+                    </section>
 
-            <ReviewForm productId={id} status={product.status} />
-        </main>
+                    <div>
+                        <ReviewForm productId={id} status={product.status} />
+                    </div>
+                </div>
+            </main>
+        </PageShell>
     );
 }

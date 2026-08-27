@@ -98,3 +98,28 @@ export async function getProductsWithFootprint(): Promise<ProductWithFootprint[]
         return { ...rest, footprint: result.total } as ProductWithFootprint;
     });
 }
+
+export type ReviewWithProduct = Review & {
+    product_name: string;
+    functional_unit: string;
+};
+
+export async function getReviewHistory(): Promise<ReviewWithProduct[]> {
+    const { data, error } = await supabase
+        .from("reviews")
+        .select("*, products(name, functional_unit)")
+        .order("created_at", { ascending: false });
+
+    if (error) throw new Error(`No se pudo leer el historial: ${error.message}`);
+
+    return (data ?? []).map((row) => {
+        const { products, ...review } = row;
+        const product = Array.isArray(products) ? products[0] : products;
+
+        return {
+            ...review,
+            product_name: product?.name ?? "Producto eliminado",
+            functional_unit: product?.functional_unit ?? "",
+        } as ReviewWithProduct;
+    });
+}

@@ -19,7 +19,7 @@ export default function Home() {
       {/* Logo arriba a la derecha */}
       <Link
         href="/"
-        className="relative self-end p-6 lg:p-10 hover:opacity-80 transition-opacity"
+        className="relative p-6 lg:p-10 hover:opacity-80 transition-opacity"
       >
         <Image
           src="/coralia.avif"
