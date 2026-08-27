@@ -52,7 +52,7 @@ export default function Home() {
             <RoleCard
               href="/empresa"
               title="SOY EMPRESA"
-              description="Calculá y gestioná la huella de tus productos."
+              description="Calculá la huella de tus productos."
               icon={<BuildingIcon />}
             />
             <RoleCard
