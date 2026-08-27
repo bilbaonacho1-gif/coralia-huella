@@ -11,6 +11,7 @@ export function SideBrand() {
                     alt="Coralia Environmental — ir al inicio"
                     width={110}
                     height={123}
+                    priority
                     className="h-auto"
                 />
             </Link>

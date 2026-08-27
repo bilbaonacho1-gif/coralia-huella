@@ -51,7 +51,7 @@ export function AddItemForm({
                 ))}
             </select>
 
-            <div className="flex gap-3">
+            <div className="flex gap-2">
                 <input
                     name="grams"
                     type="number"
@@ -60,14 +60,14 @@ export function AddItemForm({
                     inputMode="decimal"
                     placeholder="Gramos"
                     required
-                    className="flex-1 bg-surface-2 border border-line rounded-xl px-3 py-3
+                    className="flex-1 min-w-0 bg-surface-2 border border-line rounded-xl px-3 py-3
                      text-cream placeholder:text-muted/60
                      focus:outline-2 focus:outline-accent-strong"
                 />
                 <button
                     type="submit"
                     disabled={isPending}
-                    className="bg-accent-strong text-bg font-medium px-6 rounded-xl
+                    className="shrink-0 bg-accent-strong text-bg font-medium px-4 rounded-xl
                      transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                     {isPending ? "…" : "Agregar"}

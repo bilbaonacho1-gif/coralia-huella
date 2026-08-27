@@ -11,10 +11,11 @@ import {
 import { calculateFootprint } from "@/lib/carbon";
 import { AddItemForm } from "@/components/AddItemForm";
 import { EnergyForm } from "@/components/EnergyForm";
-import { Breakdown } from "@/components/Breakdown";
+import { StageBreakdown, TopContributors } from "@/components/Breakdown";
 import { SubmitForReview } from "@/components/SubmitForReview";
 import { deleteItem } from "@/app/actions/products";
 import { isEditable, type ProductStatus } from "@/lib/types";
+import { PageShell } from "@/components/PageShell";
 
 export default async function ProductoPage({
     params,
@@ -49,51 +50,55 @@ export default async function ProductoPage({
     );
 
     return (
-        <main className="flex-1 px-6 py-8 w-full max-w-md lg:max-w-5xl mx-auto pb-24">
-            <Link href="/empresa" className="text-muted text-sm hover:text-cream">
-                ← Mis productos
-            </Link>
+        <PageShell background="/hojas.webp">
+            <main className="flex-1 px-6 py-8 lg:px-12 lg:pr-[260px] w-full max-w-md lg:max-w-6xl mx-auto pb-24">
+                <Link href="/empresa" className="text-muted text-sm hover:text-cream">
+                    ← Mis productos
+                </Link>
 
-            <header className="mt-6 mb-8">
-                <h1 className="text-3xl font-semibold text-cream leading-tight">
-                    {product.name}
-                </h1>
-                <p className="text-muted mt-2">{product.functional_unit}</p>
-            </header>
-
-            <div className="lg:grid lg:grid-cols-[380px_1fr] lg:gap-10 lg:items-start">
-                {/* Columna izquierda: resultado */}
-                <div className="lg:sticky lg:top-8">
-                    <section className="bg-surface border border-line rounded-card p-6 mb-6">
-                        <p className="text-muted text-sm mb-1">Huella total</p>
-                        <p className="text-4xl font-semibold text-accent">
-                            {result.total.toFixed(4)}
-                            <span className="text-base text-muted ml-2">
-                                kg CO₂e / unidad
-                            </span>
+                {/* Fila 1: producto + desglose + top 3 */}
+                <div className="mt-6 grid gap-4 lg:grid-cols-3 mb-4">
+                    <section className="bg-surface border border-line rounded-card p-6 flex flex-col justify-center">
+                        <h1 className="text-2xl font-semibold text-cream leading-tight">
+                            {product.name}
+                        </h1>
+                        <p className="text-muted text-sm mt-1 mb-6">
+                            {product.functional_unit}
                         </p>
+
+                        <p className="text-muted text-sm mb-2">Huella total</p>
+                        <p className="text-4xl font-semibold text-accent leading-none">
+                            {result.total.toFixed(4)}
+                        </p>
+                        <p className="text-muted text-sm mt-2">kg CO₂e / unidad</p>
                     </section>
 
-                    <div className="mb-8">
-                        <Breakdown result={result} />
-                    </div>
+                    <section className="bg-surface border border-line rounded-card p-6">
+                        <StageBreakdown result={result} />
+                    </section>
+
+                    <section className="bg-surface border border-line rounded-card p-6">
+                        <TopContributors result={result} />
+                    </section>
                 </div>
 
-                {/* Columna derecha: carga de datos */}
-                <div>
-                    <Section
-                        title="Ingredientes"
-                        items={items.filter((i) => i.type === "ingredient")}
-                        factorName={factorName}
-                        status={product.status}
-                    />
-                    <AddItemForm
-                        productId={id}
-                        type="ingredient"
-                        factors={factors.filter((f) => f.category === "ingredient")}
-                    />
+                {/* Fila 2: carga de datos en tres columnas */}
+                <div className="grid gap-4 lg:grid-cols-3 mb-4">
+                    <section className="bg-surface border border-line rounded-card p-6">
+                        <Section
+                            title="Ingredientes"
+                            items={items.filter((i) => i.type === "ingredient")}
+                            factorName={factorName}
+                            status={product.status}
+                        />
+                        <AddItemForm
+                            productId={id}
+                            type="ingredient"
+                            factors={factors.filter((f) => f.category === "ingredient")}
+                        />
+                    </section>
 
-                    <div className="mt-8">
+                    <section className="bg-surface border border-line rounded-card p-6">
                         <Section
                             title="Packaging"
                             items={items.filter((i) => i.type === "packaging")}
@@ -105,11 +110,11 @@ export default async function ProductoPage({
                             type="packaging"
                             factors={factors.filter((f) => f.category === "packaging")}
                         />
-                    </div>
+                    </section>
 
-                    <div className="mt-8">
+                    <section className="bg-surface border border-line rounded-card p-6">
                         <h2 className="text-lg font-medium text-cream mb-1">Manufactura</h2>
-                        <p className="text-muted text-sm mb-3">
+                        <p className="text-muted text-sm mb-4">
                             Consumo eléctrico del lote. Se prorratea entre las unidades
                             producidas.
                         </p>
@@ -118,18 +123,19 @@ export default async function ProductoPage({
                             kwh={product.kwh_per_batch}
                             units={product.units_per_batch}
                         />
-                    </div>
-
-                    <div className="mt-10">
-                        <SubmitForReview
-                            productId={id}
-                            status={product.status}
-                            lastComment={lastReview?.comment ?? null}
-                        />
-                    </div>
+                    </section>
                 </div>
-            </div>
-        </main>
+
+                {/* Fila 3: estado y revisión */}
+                <div className="lg:max-w-2xl">
+                    <SubmitForReview
+                        productId={id}
+                        status={product.status}
+                        lastComment={lastReview?.comment ?? null}
+                    />
+                </div>
+            </main>
+        </PageShell>
     );
 }
 
@@ -152,7 +158,7 @@ function Section({
     const editable = isEditable(status);
 
     return (
-        <section className="mb-3">
+        <section className="mb-4">
             <h2 className="text-lg font-medium text-cream mb-3">{title}</h2>
             {items.length === 0 ? (
                 <p className="text-muted text-sm mb-3">Todavía no cargaste ninguno.</p>
@@ -161,13 +167,13 @@ function Section({
                     {items.map((item) => (
                         <li
                             key={item.id}
-                            className="flex justify-between items-baseline bg-surface border border-line rounded-xl px-4 py-3"
+                            className="flex justify-between items-baseline gap-2 bg-surface-2 border border-line rounded-xl px-4 py-3"
                         >
-                            <span className="text-cream text-sm">
+                            <span className="text-cream text-sm min-w-0 truncate">
                                 {factorName(item.emission_factor_id)}
                             </span>
-                            <span className="flex items-baseline gap-3">
-                                <span className="text-muted text-sm tabular-nums">
+                            <span className="flex items-baseline gap-2 shrink-0">
+                                <span className="text-muted text-xs tabular-nums">
                                     {item.grams} g ·{" "}
                                     <span className="text-accent">
                                         {((item.grams / 1000) * item.factor_snapshot).toFixed(4)}
