@@ -12,7 +12,9 @@ Stack: Next.js 16 (App Router) · Supabase (Postgres) · Tailwind 4 · Vercel.
 Cloná el repo, corré `npm install` y después `npm run dev`.
 
 Necesita un archivo `.env.local` en la raíz con dos variables de un proyecto de Supabase:
-`SUPABASE_URL` con la URL del proyecto, y `SUPABASE_SECRET_KEY` con la service role key.
+`SUPABASE_URL` con la URL del proyecto, y `SUPABASE_SECRET_KEY` con la secret key del proyecto.
+
+El esquema de la base y los factores del anexo están en `schema.sql`: pegalo en el SQL Editor de un proyecto Supabase nuevo antes de arrancar la app.
 
 ## Decisiones
 
@@ -29,7 +31,9 @@ Necesita un archivo `.env.local` en la raíz con dos variables de un proyecto de
 
 ### Limitación conocida
 
-Al aprobar, la inserción en `reviews` y el cambio de estado en `products` son dos operaciones separadas: Supabase no expone transacciones desde el cliente JS. Con más tiempo, iría en una función de Postgres.## Alcance e interpretaciones
+Al aprobar, la inserción en `reviews` y el cambio de estado en `products` son dos operaciones separadas: Supabase no expone transacciones desde el cliente JS. Con más tiempo, iría en una función de Postgres.
+
+## Alcance e interpretaciones
 
 - **Cradle-to-gate**, según lo que excluye la consigna (transporte, uso, fin de vida).
 - **Los gramos se interpretan por unidad funcional**; solo la energía se prorratea, que es lo único que el enunciado define explícitamente por lote. Esa asimetría es la ambigüedad principal que encontré.
