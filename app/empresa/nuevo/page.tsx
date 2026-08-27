@@ -13,7 +13,7 @@ export default function NuevoProductoPage() {
     );
 
     return (
-        <main className="flex-1 px-6 py-8 max-w-md mx-auto w-full">
+        <main className="flex-1 flex flex-col justify-center px-6 py-8 lg:py-12 max-w-md mx-auto w-full">
             <Link href="/empresa" className="text-muted text-sm hover:text-cream">
                 ← Volver
             </Link>

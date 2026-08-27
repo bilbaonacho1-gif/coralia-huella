@@ -9,8 +9,9 @@ export function SideBrand() {
                 <Image
                     src="/coralia.avif"
                     alt="Coralia Environmental — ir al inicio"
-                    width={120}
-                    height={140}
+                    width={110}
+                    height={123}
+                    className="h-auto"
                 />
             </Link>
         </aside>
