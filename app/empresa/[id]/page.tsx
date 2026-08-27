@@ -50,41 +50,41 @@ export default async function ProductoPage({
     );
 
     return (
-        <PageShell background="/hojas.webp">
-            <main className="flex-1 px-6 py-8 lg:px-12 w-full max-w-md lg:max-w-7xl mx-auto lg:mx-0 pb-24">
+        <PageShell>
+            <main className="flex-1 px-6 py-6 lg:px-12 lg:py-8 w-full max-w-md lg:max-w-7xl mx-auto lg:mx-0 pb-24">
                 <Link href="/empresa" className="text-muted text-sm hover:text-cream">
                     ← Mis productos
                 </Link>
 
                 {/* Fila 1: producto + desglose + top 3 */}
-                <div className="mt-6 grid gap-4 lg:grid-cols-3 mb-4">
-                    <section className="bg-surface border border-line rounded-card p-6 flex flex-col justify-center">
-                        <h1 className="text-2xl font-semibold text-cream leading-tight">
+                <div className="mt-5 grid gap-3 lg:gap-4 lg:grid-cols-3 mb-3 lg:mb-4">
+                    <section className="bg-surface border border-line rounded-card p-5 lg:p-6 lg:flex lg:flex-col lg:justify-center">
+                        <h1 className="text-xl lg:text-2xl font-semibold text-cream leading-tight">
                             {product.name}
                         </h1>
-                        <p className="text-muted text-sm mt-1 mb-6">
+                        <p className="text-muted text-sm mt-1 mb-4 lg:mb-6">
                             {product.functional_unit}
                         </p>
 
-                        <p className="text-muted text-sm mb-2">Huella total</p>
-                        <p className="text-4xl font-semibold text-accent leading-none">
+                        <p className="text-muted text-sm mb-1 lg:mb-2">Huella total</p>
+                        <p className="text-3xl lg:text-4xl font-semibold text-accent leading-none">
                             {result.total.toFixed(4)}
                         </p>
                         <p className="text-muted text-sm mt-2">kg CO₂e / unidad</p>
                     </section>
 
-                    <section className="bg-surface border border-line rounded-card p-6">
+                    <section className="bg-surface border border-line rounded-card p-5 lg:p-6">
                         <StageBreakdown result={result} />
                     </section>
 
-                    <section className="bg-surface border border-line rounded-card p-6">
+                    <section className="bg-surface border border-line rounded-card p-5 lg:p-6">
                         <TopContributors result={result} />
                     </section>
                 </div>
 
                 {/* Fila 2: carga de datos en tres columnas */}
-                <div className="grid gap-4 lg:grid-cols-3 mb-4">
-                    <section className="bg-surface border border-line rounded-card p-6">
+                <div className="grid gap-3 lg:gap-4 lg:grid-cols-3 mb-3 lg:mb-4">
+                    <section className="bg-surface border border-line rounded-card p-5 lg:p-6">
                         <Section
                             title="Ingredientes"
                             items={items.filter((i) => i.type === "ingredient")}
@@ -98,7 +98,7 @@ export default async function ProductoPage({
                         />
                     </section>
 
-                    <section className="bg-surface border border-line rounded-card p-6">
+                    <section className="bg-surface border border-line rounded-card p-5 lg:p-6">
                         <Section
                             title="Packaging"
                             items={items.filter((i) => i.type === "packaging")}
@@ -112,7 +112,7 @@ export default async function ProductoPage({
                         />
                     </section>
 
-                    <section className="bg-surface border border-line rounded-card p-6">
+                    <section className="bg-surface border border-line rounded-card p-5 lg:p-6">
                         <h2 className="text-lg font-medium text-cream mb-1">Manufactura</h2>
                         <p className="text-muted text-sm mb-4">
                             Consumo eléctrico del lote. Se prorratea entre las unidades
@@ -135,7 +135,7 @@ export default async function ProductoPage({
                     />
                 </div>
             </main>
-        </PageShell >
+        </PageShell>
     );
 }
 

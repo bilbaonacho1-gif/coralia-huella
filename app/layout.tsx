@@ -34,7 +34,7 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-bg text-cream">
+      <body className="min-h-full flex flex-col bg-bg text-cream bg-[url('/hojas.webp')] bg-fixed">
         {children}
       </body>
     </html>
