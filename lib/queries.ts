@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { calculateFootprint } from "./carbon";
 import type { EmissionFactor, Product, ProductItem, Review } from "./types";
 
 export async function getEmissionFactors(): Promise<EmissionFactor[]> {
@@ -55,4 +56,45 @@ export async function getLastReview(productId: string): Promise<Review | null> {
 
     if (error) throw new Error(`No se pudo leer la revisión: ${error.message}`);
     return data;
+}
+
+type ProductWithFootprint = Product & { footprint: number };
+
+export async function getProductsWithFootprint(): Promise<ProductWithFootprint[]> {
+    const { data, error } = await supabase
+        .from("products")
+        .select("*, product_items(type, grams, factor_snapshot, emission_factors(name))")
+        .order("created_at", { ascending: false });
+
+    if (error)
+        throw new Error(`No se pudieron leer los productos: ${error.message}`);
+
+    return (data ?? []).map((product) => {
+        const { product_items, ...rest } = product;
+
+        const items = (product_items ?? []).map((item: {
+            type: "ingredient" | "packaging";
+            grams: number;
+            factor_snapshot: number;
+            emission_factors: { name: string } | { name: string }[] | null;
+        }) => {
+            const factor = Array.isArray(item.emission_factors)
+                ? item.emission_factors[0]
+                : item.emission_factors;
+
+            return {
+                name: factor?.name ?? "Desconocido",
+                type: item.type,
+                grams: item.grams,
+                factor: item.factor_snapshot,
+            };
+        });
+
+        const result = calculateFootprint(items, {
+            kwhPerBatch: rest.kwh_per_batch ?? 0,
+            unitsPerBatch: rest.units_per_batch ?? 0,
+        });
+
+        return { ...rest, footprint: result.total } as ProductWithFootprint;
+    });
 }
