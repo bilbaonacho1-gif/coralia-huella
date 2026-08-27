@@ -26,7 +26,7 @@ export default function Home() {
           alt="Coralia Environmental"
           width={120}
           height={130}
-          className="h-auto"
+          className="h-auto w-16 lg:w-[90px]"
         />
       </Link>
 
