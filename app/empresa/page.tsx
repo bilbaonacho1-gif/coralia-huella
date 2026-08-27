@@ -23,7 +23,7 @@ export default async function EmpresaPage() {
 
     return (
         <PageShell background="/hojas.webp">
-            <main className="flex-1 px-6 py-8 lg:px-12 lg:py-12 max-w-md mx-auto lg:max-w-none lg:mx-0 w-full">
+            <main className="relative flex-1 flex flex-col justify-center px-6 pb-12 lg:px-16 xl:px-20 lg:-mt-16">
                 <Link href="/" className="text-muted text-sm hover:text-cream">
                     ← Inicio
                 </Link>

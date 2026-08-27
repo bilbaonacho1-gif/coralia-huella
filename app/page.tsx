@@ -31,7 +31,7 @@ export default function Home() {
       </Link>
 
       {/* Contenido */}
-      <main className="relative flex-1 flex flex-col justify-center px-6 pb-12 lg:px-16 xl:px-20">
+      <main className="relative flex-1 flex flex-col justify-center px-6 pb-12 lg:px-16 xl:px-20 lg:-mt-16">
         <div className="w-full max-w-md mx-auto lg:max-w-3xl">
           <header className="mb-8 lg:mb-10">
             <h1 className="text-4xl lg:text-5xl xl:text-6xl font-semibold leading-[1.1] text-cream">
