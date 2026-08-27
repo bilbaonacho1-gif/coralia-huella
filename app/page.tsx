@@ -40,7 +40,7 @@ export default function Home() {
               productos y tomá decisiones con información real.
             </h1>
             <p className="text-muted mt-6 lg:mt-8 lg:text-lg leading-relaxed lg:max-w-md">
-              Calculá y gestioná la huella ambiental de tus productos de forma
+              Calculá la huella ambiental de tus productos de forma
               simple y confiable.
             </p>
           </header>
