@@ -13,7 +13,7 @@ export default function EmpresaLayout({
                 alt=""
                 fill
                 sizes="100vw"
-                className="object-cover opacity-20 pointer-events-none"
+                className="object-cover object-left opacity-30 lg:opacity-20 pointer-events-none"
             />
             <div className="relative flex flex-1">
                 <SideBrand />
