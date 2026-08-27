@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Huella de carbono de producto — Coralia
 
-## Getting Started
+Mini app para que una empresa cosmética calcule la huella de carbono de un producto
+y un consultor la revise y apruebe.
 
-First, run the development server:
+**Demo:** https://coralia-huella.vercel.app
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Stack: Next.js 16 (App Router) · Supabase (Postgres) · Tailwind 4 · Vercel.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Cómo correrlo
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Cloná el repo, corré `npm install` y después `npm run dev`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Necesita un archivo `.env.local` en la raíz con dos variables de un proyecto de Supabase:
+`SUPABASE_URL` con la URL del proyecto, y `SUPABASE_SECRET_KEY` con la service role key.
 
-## Learn More
+## Decisiones
 
-To learn more about Next.js, take a look at the following resources:
+1. **El cálculo no se almacena.** `lib/carbon.ts` es una función pura que se ejecuta al leer. No hay totales guardados que puedan quedar desincronizados de sus ítems.
+2. **`factor_snapshot`.** Cada ítem congela el factor de emisión vigente al cargarlo, para que una revisión aprobada siga siendo auditable aunque el factor cambie después.
+3. **Ingredientes y packaging en una sola tabla** (`product_items`, con discriminador `type`): mismas columnas, mismo cálculo, misma validación.
+4. **`numeric` en lugar de `float`.** El agua desmineralizada tiene factor 0,0004; con punto flotante los redondeos se vuelven visibles a cuatro decimales.
+5. **Lectura por Server Components, escritura por Server Actions + Zod.** El navegador nunca habla con Supabase: las credenciales son server-only (sin `NEXT_PUBLIC_`).
+6. **RLS desactivado, a propósito.** Sin autenticación no hay usuarios contra los cuales escribir políticas, y el único cliente que toca la base es el servidor con la clave privada. Con auth real, el orden sería el inverso.
+7. **`force-dynamic` en las páginas que leen datos**, porque cada acción cambia lo que hay que mostrar y el caché estático daría números viejos.
+8. **Borrar ítems solo en `draft` y `rejected`.** No es una función extra: sin poder corregir, el comentario del consultor no tendría salida. El guard está en la Server Action, no solo en la UI.
+9. **Formulario de carga siempre visible** en vez de modal: el flujo es repetitivo y en mobile un panel colapsable pelea con el teclado.
+10. **Mobile-first real.** Las clases base son las de celular; `lg:` agrega el desktop.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Limitación conocida
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Al aprobar, la inserción en `reviews` y el cambio de estado en `products` son dos operaciones separadas: Supabase no expone transacciones desde el cliente JS. Con más tiempo, iría en una función de Postgres.## Alcance e interpretaciones
 
-## Deploy on Vercel
+- **Cradle-to-gate**, según lo que excluye la consigna (transporte, uso, fin de vida).
+- **Los gramos se interpretan por unidad funcional**; solo la energía se prorratea, que es lo único que el enunciado define explícitamente por lote. Esa asimetría es la ambigüedad principal que encontré.
+- **Las cantidades van en gramos** y la conversión desde volumen queda del lado del usuario: las densidades no están en el anexo. Riesgo conocido: cargar ml como si fueran gramos (10 ml de glicerina son 12,6 g, un 26% de diferencia) y la app no puede detectarlo.
+- **Sin multiempresa**, todos los productos pertenecen a la única empresa implícita. El selector de rol cambia la vista, no la identidad.
+- Los factores del anexo son ilustrativos, no certificados.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Caso validado a mano: glicerina 20 g + PET reciclado 30 g + 10 kWh / 500 u = **0,0940 kg CO₂e por unidad**.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Uso de IA
+
+- **Antigravity IDE con Gemini** para escribir código.
+- **Claude** como mentoría técnica en conversación: discutir decisiones de arquitectura, revisar criterios y encontrar errores antes de escribirlos.
+- **ChatGPT** para generar las imágenes de fondo (`bosque.webp`, `hojas.webp`). El logo es el de Coralia, no generado.
