@@ -15,6 +15,8 @@ export default function NuevoProductoPage() {
 
     return (
         <PageShell
+            background="/nuevo_producto.webp"
+            imageClassName="object-cover opacity-40 lg:opacity-35"
         >
             <main className="flex-1 flex flex-col justify-center items-center px-6 py-8 lg:py-12 lg:pr-[260px] w-full">
                 <div className="w-full max-w-md">
