@@ -58,7 +58,7 @@ export default async function ProductoPage({
 
                 {/* Fila 1: producto + desglose + top 3 */}
                 <div className="mt-6 grid gap-4 lg:grid-cols-3 mb-4">
-                    <section className="bg-surface border border-line rounded-card p-6 flex flex-col justify-center">
+                    <section className="bg-surface border border-line rounded-card p-4 lg:p-6 flex flex-col justify-center">
                         <h1 className="text-2xl font-semibold text-cream leading-tight">
                             {product.name}
                         </h1>
@@ -73,18 +73,18 @@ export default async function ProductoPage({
                         <p className="text-muted text-sm mt-2">kg CO₂e / unidad</p>
                     </section>
 
-                    <section className="bg-surface border border-line rounded-card p-6">
+                    <section className="bg-surface border border-line rounded-card p-4 lg:p-6">
                         <StageBreakdown result={result} />
                     </section>
 
-                    <section className="bg-surface border border-line rounded-card p-6">
+                    <section className="bg-surface border border-line rounded-card p-4 lg:p-6">
                         <TopContributors result={result} />
                     </section>
                 </div>
 
                 {/* Fila 2: carga de datos en tres columnas */}
                 <div className="grid gap-4 lg:grid-cols-3 mb-4">
-                    <section className="bg-surface border border-line rounded-card p-6">
+                    <section className="bg-surface border border-line rounded-card p-4 lg:p-6">
                         <Section
                             title="Ingredientes"
                             items={items.filter((i) => i.type === "ingredient")}
@@ -98,7 +98,7 @@ export default async function ProductoPage({
                         />
                     </section>
 
-                    <section className="bg-surface border border-line rounded-card p-6">
+                    <section className="bg-surface border border-line rounded-card p-4 lg:p-6">
                         <Section
                             title="Packaging"
                             items={items.filter((i) => i.type === "packaging")}
@@ -112,7 +112,7 @@ export default async function ProductoPage({
                         />
                     </section>
 
-                    <section className="bg-surface border border-line rounded-card p-6">
+                    <section className="bg-surface border border-line rounded-card p-4 lg:p-6">
                         <h2 className="text-lg font-medium text-cream mb-1">Manufactura</h2>
                         <p className="text-muted text-sm mb-4">
                             Consumo eléctrico del lote. Se prorratea entre las unidades
